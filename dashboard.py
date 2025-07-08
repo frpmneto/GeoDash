@@ -62,6 +62,9 @@ st.subheader(f"Mapa dos Municípios de {estado_selecionado_nome}")
 
 if gdf_estado is not None:
     # 1. Cria o mapa com .explore()
+    
+    # gdf_estado.crs='epsg:4674'  # Define o CRS para o sistema de coordenadas geográficas do Brasil
+    # gdf_estado = gdf_estado.to_crs(epsg=4674)  # Converte para o sistema de coordenadas WGS 84 (EPSG:4326)
     m = gdf_estado.explore(
         column="name_muni",
         tooltip="name_muni",
