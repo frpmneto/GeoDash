@@ -136,6 +136,7 @@ if tema_do_grafico == 'Escolas':
             # marker_type = 'circle_marker',
             marker_kwds=dict(radius=5)
         )
+
     cols = ['name_school', 'education_level', 'admin_category', 'government_level', 'size', 'urban', 'name_state', 'name_muni_right' ]
 
 elif tema_do_grafico == 'Municipios':
@@ -152,7 +153,12 @@ elif tema_do_grafico == 'Municipios':
         popup=True,
         style_kwds=dict(color="black", weight=0.5)
     )    
-    cols = []
+    # adicionando a coluna da area do municipio
+    gdf_projetado = gdf.to_crs('ESRI:102033')
+    gdf['area_km2'] = gdf_projetado.geometry.area / 1_000_000
+
+    # seleciona as colunas para exibir na tabela
+    cols = ['name_muni', 'name_state', 'name_region', 'area_km2']
 
 
 
@@ -182,10 +188,10 @@ if gdf is not None:
     # Opcional: Mostrar a tabela de dados
     if st.sidebar.checkbox("Mostrar tabela de dados"):
         st.subheader("Dados Tabulares")
-        if tema_do_grafico == 'Escolas':
-            if cols != []:
-                st.dataframe(gdf[cols])
-            else:
-                st.dataframe(gdf)
+        # if tema_do_grafico == 'Escolas':
+        if cols != []:
+            st.dataframe(gdf[cols])
+        else:
+            st.dataframe(gdf)
 else:
     st.warning("Não há dados para exibir. Por favor, selecione outro estado.")

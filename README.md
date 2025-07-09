@@ -1,9 +1,8 @@
 # GeoDash
 
 ## To-Do
-- colocar seletor de tema
-- plotar grafico do tema
+- fazer slides
 - selecionar features do que aparece no csv
-- plotar estatisticas do tema e estado selecionados
+- plotar estatisticas do sydra do tema e estado selecionados
 - comparar estados
 - comparar por ano
