@@ -89,34 +89,63 @@ if tema_do_grafico == 'Escolas':
         st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
     
     # define os parametros do mapa
-    m = gdf.explore(
-        # m=m,
-        column='government_level',
-        tooltip=False,
-        # scheme= 'naturalbreaks',
-        cmap='Spectral',
-        name='Escolas de Recife',
-        popup=['name_school', 'address', 'government_level', 'phone_number'],
-        legend_kwds=dict(caption='Tipo da escola'),
-        # marker_type = 'circle_marker',
-        marker_kwds=dict(radius=5)
-    )
+    if municipio_selecionado_nome != 'Todos':
+        try:
+            rec = geobr.read_municipality(code_muni=uf, year=2020)
+            rec = rec[rec.name_muni == municipio_selecionado_nome]
+        except Exception as e:
+            st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
+        mapa = rec.explore(
+            tooltip=False,
+            color='black',
+            style_kwds=dict(fillOpacity=0.2),
+            highlight=False
+        )
+        m = gdf.explore(
+            m=mapa,
+            column='government_level',
+            tooltip=False,
+            # scheme= 'naturalbreaks',
+            cmap='Spectral',
+            name='Escolas de Recife',
+            popup=['name_school', 'address', 'government_level', 'phone_number', 'name_muni'],
+            legend_kwds=dict(caption='Tipo da escola'),
+            # marker_type = 'circle_marker',
+            marker_kwds=dict(radius=5)
+        )
+    else:
+        try:
+            per = geobr.read_state(code_state=uf, year=2020)
+        except Exception as e:
+            st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
+        mapa = per.explore(
+            tooltip=False,
+            color='black',
+            style_kwds=dict(fillOpacity=0.2),
+            highlight=False
+        )
+        m = gdf.explore(
+            m=mapa,
+            column='government_level',
+            tooltip=False,
+            # scheme= 'naturalbreaks',
+            cmap='Spectral',
+            name='Escolas de Recife',
+            popup=['name_school', 'address', 'government_level', 'phone_number', 'name_muni'],
+            legend_kwds=dict(caption='Tipo da escola'),
+            # marker_type = 'circle_marker',
+            marker_kwds=dict(radius=5)
+        )
     cols = ['name_school', 'education_level', 'admin_category', 'government_level', 'size', 'urban', 'name_state', 'name_muni_right' ]
 
 elif tema_do_grafico == 'Municipios':
     try:
         gdf = geobr.read_municipality(code_muni=uf, year=2020)
-        if estado_selecionado_nome != 'Todos':
-            gdf = gdf[gdf.name_muni == estado_selecionado_nome]
+        if municipio_selecionado_nome != 'Todos':
+            gdf = gdf[gdf.name_muni == municipio_selecionado_nome]
     except Exception as e:
         st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
-    # Para o tema "Municipios", usamos a geometria do estado selecionado
-    # m = gdf_estado.explore(
-    #     tooltip=False,
-    #     color='black',
-    #     style_kwds=dict(fillOpacity=0.2),
-    #     highlight=False
-    # )
+    
     m = gdf.explore(
         column="name_muni",
         tooltip="name_muni",
