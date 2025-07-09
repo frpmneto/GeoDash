@@ -124,6 +124,9 @@ merged_df.head()
 merged_df.columns
 
 merged_df.info()
+# merged_df['Religião'] = merged_df['Religião'].replace(['sem declaracao', 'nao sabe'], 'outras religiosidades')
+merged_df['Religião'] = merged_df['Religião'].replace(['Sem declaração', 'Não sabe'], 'Outras religiosidades')
+merged_df.to_csv('merged_df.csv', index=False)
 
 """# 5. Gráficos
 
