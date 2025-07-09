@@ -66,12 +66,12 @@ gdf = geobr.read_municipality(code_muni=uf, year=2020)
 municipios_unicos = list(set(gdf['name_muni']))
 municipios_unicos.sort()
 municipios_unicos.insert(0,'Todos')
-estado_selecionado_nome = st.sidebar.selectbox(
+# estado_selecionado_nome = st.sidebar.selectbox(
+municipio_selecionado_nome = st.sidebar.selectbox(
     "Escolha o Municipio:",
     options=municipios_unicos,
     index=0 # Define todos como padrão
 )
-
 
 
 # Carrega os dados para o estado selecionado
@@ -83,8 +83,8 @@ if tema_do_grafico == 'Escolas':
     try:
         base_escolas = geobr.read_schools(year=2020)
         gdf = base_escolas[base_escolas.abbrev_state == uf]
-        if estado_selecionado_nome != 'Todos':
-            gdf = gdf[gdf.name_muni == estado_selecionado_nome]
+        if municipio_selecionado_nome != 'Todos':
+            gdf = gdf[gdf.name_muni == municipio_selecionado_nome]
     except Exception as e:
         st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
     
@@ -101,6 +101,7 @@ if tema_do_grafico == 'Escolas':
         # marker_type = 'circle_marker',
         marker_kwds=dict(radius=5)
     )
+    cols = ['name_school', 'education_level', 'admin_category', 'government_level', 'size', 'urban', 'name_state', 'name_muni_right' ]
 
 elif tema_do_grafico == 'Municipios':
     try:
@@ -122,47 +123,40 @@ elif tema_do_grafico == 'Municipios':
         popup=True,
         style_kwds=dict(color="black", weight=0.5)
     )    
+    cols = []
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 # --- Criação e exibição do mapa ---
-st.subheader(f"Mapa dos Municípios de {estado_selecionado_nome}")
+if municipio_selecionado_nome == 'Todos':
+    estado_ou_municipio = estado_selecionado_nome
+else:
+    estado_ou_municipio = f"{municipio_selecionado_nome} - {uf}"
+st.subheader(f"Mapa de {tema_do_grafico} de {estado_ou_municipio}")
 
 if gdf is not None:
-    # 1. Cria o mapa com .explore()
-
-
     
-    # m = gdf_estado.explore(
-    #     column="name_muni",
-    #     tooltip="name_muni",
-    #     popup=True,
-    #     tiles="CartoDB positron",
-    #     # cmap="viridis",
-    #     style_kwds=dict(color="black", weight=0.5)
-    # )
-    # mapa = base_filtrada.explore(
-    #     m=m,
-    #     column='government_level',
-    #     tooltip=False,
-    #     # scheme= 'naturalbreaks',
-    #     cmap='Spectral',
-    #     name='Escolas de Recife',
-    #     popup=['name_school', 'address', 'government_level', 'phone_number'],
-    #     legend_kwds=dict(caption='Tipo da escola'),
-    #     # marker_type = 'circle_marker',
-    #     marker_kwds=dict(radius=5)
-    # )
-    # 2. Renderiza o mapa no Streamlit
+    # Renderiza o mapa no Streamlit
     st_folium(m, width='100%', height=600, use_container_width=True)
+    
     # Opcional: Mostrar a tabela de dados
     if st.sidebar.checkbox("Mostrar tabela de dados"):
         st.subheader("Dados Tabulares")
         if tema_do_grafico == 'Escolas':
-            cols = ['name_school', 'education_level', 'admin_category', 'government_level', 'size', 'urban', 'name_state', 'name_muni_right' ]
-            # ['abbrev_state_left', 'name_muni_left', 'code_school', 'name_school', 'education_level', 'education_level_others', 'admin_category', 'address', 'phone_number', 'government_level', 'private_school_type', 'private_government_partnership', 'regulated_education_council', 'service_restriction', 'size', 'urban', 'location_type', 'date_update', 'geometry', 'index_right', 'code_muni', 'name_muni_right', 'code_state', 'abbrev_state_right', 'name_state', 'code_region', 'name_region']
-            # todrop = ['geometry', 'index_right', 'id_school', 'id_muni', 'id_state', 'code_muni', 'code_region', 'code_state']
-            st.dataframe(gdf[cols])
-            # st.dataframe(base_filtrada)
+            if cols != []:
+                st.dataframe(gdf[cols])
+            else:
+                st.dataframe(gdf)
 else:
     st.warning("Não há dados para exibir. Por favor, selecione outro estado.")
