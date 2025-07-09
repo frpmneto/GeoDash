@@ -50,18 +50,20 @@ st.sidebar.header("Controles do Mapa")
 # Seletor de tema
 tema_do_grafico = st.sidebar.selectbox(
     "Escolha o tema a ser visualizado:",
-    options=['Municipios', "Escolas"],
-    # options=['Municipios', "População", "Escolas", "Saúde", "Economia"],
+    options=['Municipios', "Escolas", 'Terras Indígenas', 'Outro'],
     index=0 # Define municipios como padrão
 )
 # Seletor de estado
+
+estados = list(estados_brasileiros.keys())
 estado_selecionado_nome = st.sidebar.selectbox(
     "Escolha o Estado:",
-    options=list(estados_brasileiros.keys()),
+    options= estados,
     index=16 # Define Pernambuco como padrão
 )
 # seletor de municipio
 uf = estados_brasileiros[estado_selecionado_nome]
+
 gdf = geobr.read_municipality(code_muni=uf, year=2020)
 municipios_unicos = list(set(gdf['name_muni']))
 municipios_unicos.sort()
@@ -106,7 +108,7 @@ if tema_do_grafico == 'Escolas':
             column='government_level',
             tooltip=False,
             # scheme= 'naturalbreaks',
-            cmap='Spectral',
+            # cmap='Spectral',
             name='Escolas de Recife',
             popup=['name_school', 'address', 'government_level', 'phone_number', 'name_muni'],
             legend_kwds=dict(caption='Tipo da escola'),
@@ -124,10 +126,11 @@ if tema_do_grafico == 'Escolas':
             style_kwds=dict(fillOpacity=0.2),
             highlight=False
         )
+        cols = ['name_school', 'education_level', 'admin_category', 'government_level', 'size', 'urban', 'name_muni', 'abbrev_state']
         m = gdf.explore(
             m=mapa,
             column='government_level',
-            tooltip=False,
+            tooltip=cols,
             # scheme= 'naturalbreaks',
             cmap='Spectral',
             name='Escolas de Recife',
@@ -136,10 +139,48 @@ if tema_do_grafico == 'Escolas':
             # marker_type = 'circle_marker',
             marker_kwds=dict(radius=5)
         )
-
-    cols = ['name_school', 'education_level', 'admin_category', 'government_level', 'size', 'urban', 'name_state', 'name_muni_right' ]
-
+   
 elif tema_do_grafico == 'Municipios':
+    try:
+        gdf = geobr.read_municipality(code_muni=uf, year=2020)
+        if municipio_selecionado_nome != 'Todos':
+            gdf = gdf[gdf.name_muni == municipio_selecionado_nome]
+    except Exception as e:
+        st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
+    # adicionando a coluna da area do municipio
+    gdf_projetado = gdf.to_crs('ESRI:102033') # precisa converter para um sistema de coordenadas projetadas para calcular a área corretamente em km2 e nao em graus2
+    gdf['area_km2'] = gdf_projetado.geometry.area / 1_000_000 # converte de metros quadrados para quilômetros quadrados
+    gdf['area_km2'] = gdf['area_km2'].round(2)
+    # seleciona as colunas para exibir na tabela
+    cols = ['name_muni', 'name_state', 'name_region', 'area_km2']
+    m = gdf.explore(
+        column="name_muni",
+        tooltip=cols,
+        popup=True,
+        style_kwds=dict(color="black", weight=0.5)
+    )    
+
+elif tema_do_grafico == 'Terras Indígenas':
+    try:
+        gdf = geobr.read_indigenous_land()
+        if estado_selecionado_nome != 'Todos':
+            gdf = gdf[gdf['abbrev_state'].str.contains(uf, na=False)]
+        if municipio_selecionado_nome != 'Todos':
+            gdf = gdf[gdf['name_muni'].str.contains(municipio_selecionado_nome, na=False)]
+    except Exception as e:    
+        st.error(f"Não foi possível carregar os dados para {uf}. Erro: {e}")
+    
+    # seleciona as colunas para exibir na tabela
+    cols = ['terrai_nom', 'etnia_nome', 'superficie', 'modalidade', 'name_muni', 'abbrev_state']  # Colunas vazias, pois não há dados tabulares para exibir neste caso
+
+    m = gdf.explore(
+        column="terrai_nom",
+        tooltip=cols,
+        popup=True,
+        style_kwds=dict(color="black", weight=0.5)
+    )    
+
+elif tema_do_grafico == 'Outro':
     try:
         gdf = geobr.read_municipality(code_muni=uf, year=2020)
         if municipio_selecionado_nome != 'Todos':
@@ -154,8 +195,8 @@ elif tema_do_grafico == 'Municipios':
         style_kwds=dict(color="black", weight=0.5)
     )    
     # adicionando a coluna da area do municipio
-    gdf_projetado = gdf.to_crs('ESRI:102033')
-    gdf['area_km2'] = gdf_projetado.geometry.area / 1_000_000
+    gdf_projetado = gdf.to_crs('ESRI:102033') # precisa converter para um sistema de coordenadas projetadas para calcular a área corretamente em km2 e nao em graus2
+    gdf['area_km2'] = gdf_projetado.geometry.area / 1_000_000 # converte de metros quadrados para quilômetros quadrados
 
     # seleciona as colunas para exibir na tabela
     cols = ['name_muni', 'name_state', 'name_region', 'area_km2']
