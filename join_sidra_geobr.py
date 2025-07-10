@@ -206,7 +206,7 @@ fig2.update_layout(
 )
 fig2.show()
 
-"""# Cor/Raça x Estado"""
+"""# Cor/Raca x Estado"""
 
 # Filtrando o DataFrame para o estado selecionado
 state_name = "Bahia"
@@ -246,7 +246,7 @@ fig3.update_traces(textposition='outside')
 fig3.show()
 
 
-"""# Sexo x Raça por Estado"""
+"""# Sexo x Raca por Estado"""
 # Filtrando o DataFrame para o estado selecionado
 state_name = "Pernambuco"
 df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
@@ -269,3 +269,27 @@ fig4.update_layout(barmode='stack',
                     width=600)
 fig4.update_traces(texttemplate='%{text:.2s}', textposition='outside')
 fig4.show()
+
+
+"""# Religiao x Cor/Raca por Estado"""
+# Filtrando o DataFrame para o estado selecionado
+state_name = "Pernambuco"
+df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
+
+# Agrupando por Religião pela soma
+religiao_group = df_state.groupby(['Religião', 'Cor ou raça'])['Valor'].sum().reset_index()
+
+fig5 = px.bar(
+    religiao_group,
+    x='Religião',
+    y='Valor',
+    color='Cor ou raça',
+    title=f'Distribuição da população por Religião e Cor/Raça - {state_name}',
+    color_discrete_sequence=px.colors.qualitative.Set3
+)
+fig5.update_layout(
+    margin=dict(l=20, r=20, t=50, b=20),
+    height=400,
+    width=800
+)
+fig5.show()
