@@ -114,6 +114,14 @@ df_filtered['Religião'] = df_filtered['Religião'].replace('Católica Apostóli
 
 # Deixando o mesmo nome da outra coluna
 df_filtered = df_filtered.rename(columns={'Unidade da Federação (Código)': 'code_state'})
+df_filtered['Religião'] = df_filtered['Religião'].replace(['Sem declaração', 'Não sabe'], 'Outras religiosidades')
+df_filtered.to_csv('merged_df.csv', index=False)
+
+
+
+
+
+
 
 # Convertendo o valor float para object
 state['code_state'] = state['code_state'].astype(int).astype(str)
@@ -126,124 +134,124 @@ merged_df.columns
 merged_df.info()
 # merged_df['Religião'] = merged_df['Religião'].replace(['sem declaracao', 'nao sabe'], 'outras religiosidades')
 merged_df['Religião'] = merged_df['Religião'].replace(['Sem declaração', 'Não sabe'], 'Outras religiosidades')
-merged_df.to_csv('merged_df.csv', index=False)
+# merged_df.to_csv('merged_df.csv', index=False)
 
 """# 5. Gráficos
 
 ## Estado x Religião
 """
 
-def escala_formato(value):
-    if value >= 1_000_000:
-        return f'{value / 1_000_000:.2f} M'
-    elif value >= 1000:
-        return f'{value / 1000:.0f} K'
-    else:
-        return f'{value:.0f}'
+# def escala_formato(value):
+#     if value >= 1_000_000:
+#         return f'{value / 1_000_000:.2f} M'
+#     elif value >= 1000:
+#         return f'{value / 1000:.0f} K'
+#     else:
+#         return f'{value:.0f}'
 
-# Filtrando o DataFrame para o estado selecionado
-state_name = "Pernambuco"
-df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
+# # Filtrando o DataFrame para o estado selecionado
+# state_name = "Pernambuco"
+# df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
 
-# Agrupando por Religião pela soma
-religiao_group = df_state.groupby('Religião')['Valor'].sum().reset_index()
+# # Agrupando por Religião pela soma
+# religiao_group = df_state.groupby('Religião')['Valor'].sum().reset_index()
 
-# Criando coluna formatada com escala personalizada
-religiao_group['Valor_formatado'] = religiao_group['Valor'].apply(escala_formato)
+# # Criando coluna formatada com escala personalizada
+# religiao_group['Valor_formatado'] = religiao_group['Valor'].apply(escala_formato)
 
-# Convertendo Valor para milhões para manter o eixo
-religiao_group['Valor_M'] = religiao_group['Valor'] / 1_000_000
+# # Convertendo Valor para milhões para manter o eixo
+# religiao_group['Valor_M'] = religiao_group['Valor'] / 1_000_000
 
-# Ordenando
-religiao_group.sort_values(by='Valor_M', ascending=False, inplace=True)
+# # Ordenando
+# religiao_group.sort_values(by='Valor_M', ascending=False, inplace=True)
 
-# Plotando o gráfico
-fig1 = px.bar(
-    religiao_group,
-    x='Religião',
-    y='Valor_M',
-    title=f'Distribuição da População por Religião em {state_name}',
-    text='Valor_formatado',
-    color='Religião',
-    color_discrete_sequence=px.colors.qualitative.Set2
-)
+# # Plotando o gráfico
+# fig1 = px.bar(
+#     religiao_group,
+#     x='Religião',
+#     y='Valor_M',
+#     title=f'Distribuição da População por Religião em {state_name}',
+#     text='Valor_formatado',
+#     color='Religião',
+#     color_discrete_sequence=px.colors.qualitative.Set2
+# )
 
-fig1.update_layout(
-    xaxis_tickangle=-45,
-    xaxis_title=None,
-    yaxis_title=None,
-    yaxis=dict(showticklabels=False, showgrid=True, zeroline=False),
-    plot_bgcolor='white'
-)
-fig1.update_traces(textposition='outside')
+# fig1.update_layout(
+#     xaxis_tickangle=-45,
+#     xaxis_title=None,
+#     yaxis_title=None,
+#     yaxis=dict(showticklabels=False, showgrid=True, zeroline=False),
+#     plot_bgcolor='white'
+# )
+# fig1.update_traces(textposition='outside')
 
-fig1.show()
+# fig1.show()
 
-"""## Estado x Sexo"""
+# """## Estado x Sexo"""
 
-# Filtrando o DataFrame para o estado selecionado
-state_name = "São Paulo"
-df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
+# # Filtrando o DataFrame para o estado selecionado
+# state_name = "São Paulo"
+# df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
 
-# Agrupando por Sexo pela soma do Valor
-sexo_group = df_state.groupby('Sexo')['Valor'].sum().reset_index()
+# # Agrupando por Sexo pela soma do Valor
+# sexo_group = df_state.groupby('Sexo')['Valor'].sum().reset_index()
 
-# Plotando a figura
-fig2 = px.pie(
-    sexo_group,
-    names='Sexo',
-    values='Valor',
-    title= f'% da População por Sexo em {state_name}',
-    color_discrete_sequence=px.colors.qualitative.Set3
-)
+# # Plotando a figura
+# fig2 = px.pie(
+#     sexo_group,
+#     names='Sexo',
+#     values='Valor',
+#     title= f'% da População por Sexo em {state_name}',
+#     color_discrete_sequence=px.colors.qualitative.Set3
+# )
 
-# Elementos de design do gráfico
-fig2.update_traces(textinfo='percent+label', pull=[0.05, 0])
-fig2.update_layout(
-    margin=dict(l=20, r=20, t=50, b=20),
-    height=400,
-    width=600
-)
-fig2.show()
+# # Elementos de design do gráfico
+# fig2.update_traces(textinfo='percent+label', pull=[0.05, 0])
+# fig2.update_layout(
+#     margin=dict(l=20, r=20, t=50, b=20),
+#     height=400,
+#     width=600
+# )
+# fig2.show()
 
 """# Cor/Raca x Estado"""
 
-# Filtrando o DataFrame para o estado selecionado
-state_name = "Bahia"
-df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
+# # Filtrando o DataFrame para o estado selecionado
+# state_name = "Bahia"
+# df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
 
-# Agrupando por Cor/Raça
-cor_group = df_state.groupby('Cor ou raça')['Valor'].sum().reset_index()
+# # Agrupando por Cor/Raça
+# cor_group = df_state.groupby('Cor ou raça')['Valor'].sum().reset_index()
 
-# Criando coluna formatada
-cor_group['Valor_formatado'] = cor_group['Valor'].apply(escala_formato)
+# # Criando coluna formatada
+# cor_group['Valor_formatado'] = cor_group['Valor'].apply(escala_formato)
 
-# Convertendo Valor para milhões para manter o eixo fixo em M
-cor_group['Valor_M'] = cor_group['Valor'] / 1_000_000
+# # Convertendo Valor para milhões para manter o eixo fixo em M
+# cor_group['Valor_M'] = cor_group['Valor'] / 1_000_000
 
-# Ordenando
-cor_group.sort_values(by='Valor_M', ascending=False, inplace=True)
+# # Ordenando
+# cor_group.sort_values(by='Valor_M', ascending=False, inplace=True)
 
-# Plotando o gráfico
-fig3 = px.bar(
-    cor_group,
-    x='Cor ou raça',
-    y='Valor_M',
-    title=f'Distribuição da População por Cor/Raça em {state_name}',
-    text='Valor_formatado',
-    color='Cor ou raça',
-    color_discrete_sequence=px.colors.qualitative.Pastel2
-)
+# # Plotando o gráfico
+# fig3 = px.bar(
+#     cor_group,
+#     x='Cor ou raça',
+#     y='Valor_M',
+#     title=f'Distribuição da População por Cor/Raça em {state_name}',
+#     text='Valor_formatado',
+#     color='Cor ou raça',
+#     color_discrete_sequence=px.colors.qualitative.Pastel2
+# )
 
-fig3.update_layout(
-    xaxis_tickangle=-45,
-    xaxis_title=None,
-    yaxis_title=None,
-    yaxis=dict(showticklabels=False, showgrid=True, zeroline=False),
-    plot_bgcolor='white'
-)
-fig3.update_traces(textposition='outside')
-fig3.show()
+# fig3.update_layout(
+#     xaxis_tickangle=-45,
+#     xaxis_title=None,
+#     yaxis_title=None,
+#     yaxis=dict(showticklabels=False, showgrid=True, zeroline=False),
+#     plot_bgcolor='white'
+# )
+# fig3.update_traces(textposition='outside')
+# fig3.show()
 
 
 """# Sexo x Raca por Estado"""
@@ -251,16 +259,17 @@ fig3.show()
 state_name = "Pernambuco"
 df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
 
-df_sexo_cor = df_state.groupby(['Sexo', 'Cor ou raça'])['Valor'].sum().reset_index()
 
-fig4 = px.bar(df_sexo_cor,
-             x='Sexo',
-             y='Valor',
-             color='Cor ou raça',
-             title=f'Distribuição da População por Cor/Raça e Sexo - {state_name}',
-             labels={'Valor': 'População'},
-             color_discrete_sequence=px.colors.qualitative.Vivid,
-             text='Valor')
+# df_sexo_cor = df_state.groupby(['Sexo', 'Cor ou raça'])['Valor'].sum().reset_index()
+
+# fig4 = px.bar(df_sexo_cor,
+#              x='Sexo',
+#              y='Valor',
+#              color='Cor ou raça',
+#              title=f'Distribuição da População por Cor/Raça e Sexo - {state_name}',
+#              labels={'Valor': 'População'},
+#              color_discrete_sequence=px.colors.qualitative.Vivid,
+#              text='Valor')
 
 fig4.update_layout(barmode='stack', 
                     xaxis_tickangle=-45,
