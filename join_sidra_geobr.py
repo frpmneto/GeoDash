@@ -244,3 +244,28 @@ fig3.update_layout(
 )
 fig3.update_traces(textposition='outside')
 fig3.show()
+
+
+"""# Sexo x Raça por Estado"""
+# Filtrando o DataFrame para o estado selecionado
+state_name = "Pernambuco"
+df_state = merged_df[merged_df['Unidade da Federação'] == state_name].copy()
+
+df_sexo_cor = df_state.groupby(['Sexo', 'Cor ou raça'])['Valor'].sum().reset_index()
+
+fig4 = px.bar(df_sexo_cor,
+             x='Sexo',
+             y='Valor',
+             color='Cor ou raça',
+             title=f'Distribuição da População por Cor/Raça e Sexo - {state_name}',
+             labels={'Valor': 'População'},
+             color_discrete_sequence=px.colors.qualitative.Vivid,
+             text='Valor')
+
+fig4.update_layout(barmode='stack', 
+                    xaxis_tickangle=-45,
+                    margin=dict(l=20, r=20, t=50, b=20),
+                    height=500,
+                    width=600)
+fig4.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+fig4.show()
