@@ -8,18 +8,23 @@ O dashboard em si foi desenvolvido em python utilizando a biblioteca [Streamlit]
 
 Também foram utilizadas outras bibliotecas como o plotly para auxiliar na criação de gráficos, e o [Geopandas](https://geopandas.org/en/stable/index.html) para gerar os mapas.
 
-## Como rodar
+## Como executar o projeto
 
-Após instalar todas as bibliotecas necessárias, e clonar o repositório, basta rodar o comando:
+1. **Clone o repositório**
+git clone https://github.com/seuusuario/seurepositorio.git
+cd seurepositorio
 
-`streamlit run dashboard.py`
+2. **Instale as bibliotecas necessárias**
+pip install -r requirements.txt
 
-Então uma janela se abrirá em seu navegador rodando o dashboard
+3. **Execute o dashboard**
+streamlit run dashboard.py
+
+Então uma janela se abrirá em seu navegador rodando o dashboard.
 
 ## Planos futuros
 
 Os próximos passos para esse projeto são:
-
 - comparar estatísticas entre diferentes estados
 - comparar dados por ano
 - fazer um heatmap dos estados baseando-se no filtro selecionado (cor = 'x', ou religiao = 'y')
