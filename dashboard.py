@@ -20,9 +20,9 @@ warnings.filterwarnings("ignore")
 
 
 
-gdf = None
-rec = None
-per = None
+# gdf = None
+# rec = None
+# per = None
 
 
 @st.cache_data  # Cache para os dados de municípios por estado
