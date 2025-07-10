@@ -11,8 +11,7 @@ Também foram utilizadas outras bibliotecas como o plotly para auxiliar na cria�
 ## Como executar o projeto
 
 1. **Clone o repositório**
-git clone https://github.com/seuusuario/seurepositorio.git
-cd seurepositorio
+git clone https://github.com/frpmneto/GeoDash.git
 
 2. **Instale as bibliotecas necessárias**
 pip install -r requirements.txt
